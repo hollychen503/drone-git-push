@@ -29,7 +29,7 @@ func LocalReplaceTag(remote, localbranch string, branch string, force bool, foll
 		"-fa",
 		str,
 		"-m",
-		"\"tag to "+str+\"")
+		"\"tag to "+str+" by drone CI\"")
 
 	return cmd
 }

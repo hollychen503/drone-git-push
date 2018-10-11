@@ -59,6 +59,7 @@ func RemotePushNamedBranch(remote, localbranch string, branch string, force bool
 
 // RemoteDeleteTag ...
 func RemoteDeleteTag(remote, localbranch string, branch string, force bool, followtags bool, delRemoteTag bool) *exec.Cmd {
+	fmt.Println("local branch is ", localbranch)
 
 	// find version
 	// read tag from .tag file
@@ -76,6 +77,31 @@ func RemoteDeleteTag(remote, localbranch string, branch string, force bool, foll
 		"push",
 		remote,
 		":refs/tags/"+str)
+
+	return cmd
+}
+
+// RemoteAddTag ...
+func RemoteAddTag(remote, localbranch string, branch string, force bool, followtags bool, delRemoteTag bool) *exec.Cmd {
+
+	// find version
+	// read tag from .tag file
+	b, err := ioutil.ReadFile("version") // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return nil
+	}
+	//fmt.Println(b) // print the content as 'bytes'
+	str := string(b) // convert content to a 'string'
+	fmt.Println(str) // print the content as a 'string'
+
+	// #Push the tag to the remote origin
+	// git push --tags
+
+	cmd := exec.Command(
+		"git",
+		"push",
+		"--tags")
 
 	return cmd
 }

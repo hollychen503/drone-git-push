@@ -205,6 +205,10 @@ func (p Plugin) HandlePushDeleteTag() error {
 	if err != nil {
 		return err
 	}
+	err = execute(repo.RemoteAddTag(name, local, branch, force, followtags, delRemoteTag))
+	if err != nil {
+		return err
+	}
 
 	return err
 }
