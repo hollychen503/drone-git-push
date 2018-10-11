@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"regexp"
 )
 
 // RemoteRemove drops the defined remote from a git repo.
@@ -72,6 +73,9 @@ func RemoteDeleteTag(remote, localbranch string, branch string, force bool, foll
 	str := string(b) // convert content to a 'string'
 	fmt.Println(str) // print the content as a 'string'
 
+	re2 := regexp.MustCompile(`v\d+\.\d+\.\d+`)
+	str = re2.FindString(str)
+
 	cmd := exec.Command(
 		"git",
 		"push",
@@ -94,6 +98,9 @@ func RemoteAddTag(remote, localbranch string, branch string, force bool, followt
 	//fmt.Println(b) // print the content as 'bytes'
 	str := string(b) // convert content to a 'string'
 	fmt.Println(str) // print the content as a 'string'
+
+	re2 := regexp.MustCompile(`v\d+\.\d+\.\d+`)
+	str = re2.FindString(str)
 
 	// #Push the tag to the remote origin
 	// git push --tags

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"regexp"
 )
 
 // LocalReplaceTag ...
@@ -22,6 +23,11 @@ func LocalReplaceTag(remote, localbranch string, branch string, force bool, foll
 	//fmt.Println(b) // print the content as 'bytes'
 	str := string(b) // convert content to a 'string'
 	fmt.Println(str) // print the content as a 'string'
+
+	re2 := regexp.MustCompile(`v\d+\.\d+\.\d+`)
+	str = re2.FindString(str)
+
+	//fmt.Printf("%s\n")
 
 	cmd := exec.Command(
 		"git",
