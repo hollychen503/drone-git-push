@@ -91,6 +91,11 @@ func main() {
 			EnvVar: "PLUGIN_FOLLOWTAGS,GIT_PUSH_FOLLOWTAGS",
 		},
 		cli.BoolFlag{
+			Name:   "deletetag",
+			Usage:  "delete remote tag",
+			EnvVar: "PLUGIN_DELETETAG,GIT_PUSH_DELETETAG",
+		},
+		cli.BoolFlag{
 			Name:   "skip-verify",
 			Usage:  "skip ssl verification",
 			EnvVar: "PLUGIN_SKIP_VERIFY,GIT_PUSH_SKIP_VERIFY",
@@ -151,6 +156,7 @@ func run(c *cli.Context) error {
 			Path:          c.String("path"),
 			Force:         c.Bool("force"),
 			FollowTags:    c.Bool("followtags"),
+			DeleteTag:     c.Bool("deletetag"),
 			SkipVerify:    c.Bool("skip-verify"),
 			Commit:        c.Bool("commit"),
 			CommitMessage: c.String("commit-message"),

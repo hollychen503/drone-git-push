@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/appleboy/drone-git-push/repo"
 	"os"
+
+	"github.com/appleboy/drone-git-push/repo"
 )
 
 type (
@@ -34,6 +35,7 @@ type (
 		Path          string
 		Force         bool
 		FollowTags    bool
+		DeleteTag     bool
 		SkipVerify    bool
 		Commit        bool
 		CommitMessage string
@@ -74,8 +76,15 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
-	if err := p.HandlePush(); err != nil {
-		return err
+	//
+	if p.Config.DeleteTag {
+		if err := p.HandlePushDeleteTag(); err != nil {
+			return err
+		}
+	} else {
+		if err := p.HandlePush(); err != nil {
+			return err
+		}
 	}
 
 	return p.HandleCleanup()
@@ -174,6 +183,24 @@ func (p Plugin) HandlePush() error {
 	)
 
 	return execute(repo.RemotePushNamedBranch(name, local, branch, force, followtags))
+}
+
+// HandlePushDeleteTag delete tag to the remote repo.
+func (p Plugin) HandlePushDeleteTag() error {
+	var (
+		name         = p.Config.RemoteName
+		local        = p.Config.LocalBranch
+		branch       = p.Config.Branch
+		force        = p.Config.Force
+		followtags   = p.Config.FollowTags
+		delRemoteTag = p.Config.DeleteTag
+	)
+
+	err := execute(repo.RemoteDeleteTag(name, local, branch, force, followtags, delRemoteTag))
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 // HandleCleanup does eventually do some cleanup.
