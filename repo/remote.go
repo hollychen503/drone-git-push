@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os/exec"
 )
 
@@ -51,6 +53,29 @@ func RemotePushNamedBranch(remote, localbranch string, branch string, force bool
 			cmd.Args,
 			"--follow-tags")
 	}
+
+	return cmd
+}
+
+// RemoteDeleteTag ...
+func RemoteDeleteTag(remote, localbranch string, branch string, force bool, followtags bool, delRemoteTag bool) *exec.Cmd {
+
+	// find version
+	// read tag from .tag file
+	b, err := ioutil.ReadFile("version") // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return nil
+	}
+	//fmt.Println(b) // print the content as 'bytes'
+	str := string(b) // convert content to a 'string'
+	fmt.Println(str) // print the content as a 'string'
+
+	cmd := exec.Command(
+		"git",
+		"push",
+		remote,
+		":refs/tags/"+str)
 
 	return cmd
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/appleboy/drone-git-push/repo"
+	"github.com/hollychen503/drone-git-push/repo"
 )
 
 type (
@@ -200,6 +200,12 @@ func (p Plugin) HandlePushDeleteTag() error {
 	if err != nil {
 		return err
 	}
+
+	err = execute(repo.LocalReplaceTag(name, local, branch, force, followtags, delRemoteTag))
+	if err != nil {
+		return err
+	}
+
 	return err
 }
 
