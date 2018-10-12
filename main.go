@@ -91,9 +91,9 @@ func main() {
 			EnvVar: "PLUGIN_FOLLOWTAGS,GIT_PUSH_FOLLOWTAGS",
 		},
 		cli.BoolFlag{
-			Name:   "deletetag",
-			Usage:  "delete remote tag",
-			EnvVar: "PLUGIN_DELETETAG,GIT_PUSH_DELETETAG",
+			Name:   "tagremote",
+			Usage:  "tag to remote by .tags",
+			EnvVar: "PLUGIN_TAGREMOTE,GIT_PUSH_TAGREMOTE",
 		},
 		cli.BoolFlag{
 			Name:   "skip-verify",
@@ -156,7 +156,7 @@ func run(c *cli.Context) error {
 			Path:          c.String("path"),
 			Force:         c.Bool("force"),
 			FollowTags:    c.Bool("followtags"),
-			DeleteTag:     c.Bool("deletetag"),
+			TagRemote:     c.Bool("tagremote"),
 			SkipVerify:    c.Bool("skip-verify"),
 			Commit:        c.Bool("commit"),
 			CommitMessage: c.String("commit-message"),

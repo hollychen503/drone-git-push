@@ -1,7 +1,11 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"os"
+	"regexp"
 
 	"github.com/hollychen503/drone-git-push/repo"
 )
@@ -35,7 +39,7 @@ type (
 		Path          string
 		Force         bool
 		FollowTags    bool
-		DeleteTag     bool
+		TagRemote     bool
 		SkipVerify    bool
 		Commit        bool
 		CommitMessage string
@@ -77,8 +81,8 @@ func (p Plugin) Exec() error {
 	}
 
 	//
-	if p.Config.DeleteTag {
-		if err := p.HandlePushDeleteTag(); err != nil {
+	if p.Config.TagRemote {
+		if err := p.HandlePushTagRemote(); err != nil {
 			return err
 		}
 	} else {
@@ -185,21 +189,91 @@ func (p Plugin) HandlePush() error {
 	return execute(repo.RemotePushNamedBranch(name, local, branch, force, followtags))
 }
 
-// HandlePushDeleteTag delete tag to the remote repo.
-func (p Plugin) HandlePushDeleteTag() error {
+func tagExist(remote, local string) (bool, error) {
+	// open local
+	// find version
+	// read tag from .tag file
+	b, err := ioutil.ReadFile(local) // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return false, err
+	}
+	//fmt.Println(b) // print the content as 'bytes'
+	str := string(b) // convert content to a 'string'
+	fmt.Println(str) // print the content as a 'string'
+
+	re2 := regexp.MustCompile(`v\d+\.\d+\.\d+`) // v1.2.3
+	str = re2.FindString(str)
+	if len(str) < 6 {
+		return false, errors.New("no version in file" + local)
+	}
+
+	// get data from remote tag info
+	rb, err := ioutil.ReadFile(remote) // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return false, err
+	}
+	//fmt.Println(b) // print the content as 'bytes'
+	strRemote := string(rb) // convert content to a 'string'
+	//fmt.Println(str) // print the content as a 'string'
+
+	// find new version in remote tag info
+	re := regexp.MustCompile("(?m)/" + str + `\b`)
+	m := re.FindAllString(strRemote, -1)
+	fmt.Printf("%d matches\n", len(m))
+	if len(m) > 0 {
+		for _, s := range m {
+			fmt.Println(s)
+		}
+		return true, nil
+	}
+
+	return false, nil
+}
+
+// HandlePushTagRemote delete tag to the remote repo.
+func (p Plugin) HandlePushTagRemote() error {
 	var (
 		name         = p.Config.RemoteName
 		local        = p.Config.LocalBranch
 		branch       = p.Config.Branch
 		force        = p.Config.Force
 		followtags   = p.Config.FollowTags
-		delRemoteTag = p.Config.DeleteTag
+		delRemoteTag = p.Config.TagRemote
 	)
 
-	err := execute(repo.RemoteDeleteTag(name, local, branch, force, followtags, delRemoteTag))
-	if err != nil {
-		return err
+	err := errors.New("")
+	/*
+		t := time.Now()
+		fmt.Println(t.Format(time.RFC3339))
+
+		err := executeToFile(repo.RemoteGetTags(name, local, branch, force, followtags, delRemoteTag), ".remoteTags")
+		//err := execute(repo.RemoteGetTags(name, local, branch, force, followtags, delRemoteTag))
+		if err != nil {
+			return err
+		}
+
+		t = time.Now()
+		fmt.Println(t.Format(time.RFC3339))
+	*/
+
+	if force {
+		err = execute(repo.RemoteDeleteTag(name, local, branch, force, followtags, delRemoteTag))
+		if err != nil {
+			return err
+		}
 	}
+	/*
+		else {
+			isIn, err := tagExist(".remoteTags", ".tags")
+			if err != nil {
+				return err
+			}
+			if isIn {
+				return errors.New("tag is existed in repo")
+			}
+		}*/
 
 	err = execute(repo.LocalReplaceTag(name, local, branch, force, followtags, delRemoteTag))
 	if err != nil {

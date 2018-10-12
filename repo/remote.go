@@ -58,13 +58,40 @@ func RemotePushNamedBranch(remote, localbranch string, branch string, force bool
 	return cmd
 }
 
+// RemoteGetTags ...
+func RemoteGetTags(remote, localbranch string, branch string, force bool, followtags bool, delRemoteTag bool) *exec.Cmd {
+	fmt.Println("local branch is ", localbranch)
+	// git ls-remote --tags origin  // now work.
+	// now i clone all tags from remote by plugin/git with tags=true
+
+	// git show-ref --tags
+	cmd := exec.Command(
+		//"/bin/sh", //alpine
+		//"-c",
+		//`"/usr/bin/git tag > .remoteTags"`,
+		"git",
+		"tag",
+	//">",
+	//".remoteTags",
+	//"ls-remote",
+	//"--tags",
+	//"show-ref",
+	//"--tags",
+	//"origin",
+	//" | tee .remoteTags",
+	)
+
+	return cmd
+
+}
+
 // RemoteDeleteTag ...
 func RemoteDeleteTag(remote, localbranch string, branch string, force bool, followtags bool, delRemoteTag bool) *exec.Cmd {
 	fmt.Println("local branch is ", localbranch)
 
 	// find version
 	// read tag from .tag file
-	b, err := ioutil.ReadFile("version") // just pass the file name
+	b, err := ioutil.ReadFile(".tags") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
 		return nil
@@ -90,7 +117,7 @@ func RemoteAddTag(remote, localbranch string, branch string, force bool, followt
 
 	// find version
 	// read tag from .tag file
-	b, err := ioutil.ReadFile("version") // just pass the file name
+	b, err := ioutil.ReadFile(".tags") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
 		return nil

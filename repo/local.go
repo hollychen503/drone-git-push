@@ -28,11 +28,15 @@ func LocalReplaceTag(remote, localbranch string, branch string, force bool, foll
 	str = re2.FindString(str)
 
 	//fmt.Printf("%s\n")
+	fa := "-a"
+	if force {
+		fa = "-fa"
+	}
 
 	cmd := exec.Command(
 		"git",
 		"tag",
-		"-fa",
+		fa,
 		str,
 		"-m",
 		"\"tag to "+str+" by drone CI\"")
